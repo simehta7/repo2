@@ -1,0 +1,8 @@
+# project-repo/.github/workflows/manifest1.yml
+name: Manifest Workflow 1
+
+on: [push]
+
+jobs:
+  build:
+    uses: owner/central-workflows/.github/workflows/template.yml@main
