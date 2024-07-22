@@ -5,4 +5,4 @@ on: [push]
 
 jobs:
   build:
-    uses: owner/central-workflows/.github/workflows/template.yml@main
+    uses: owner/repo1/.github/workflows/template.yml@main
