@@ -1,8 +1,13 @@
-# project-repo/.github/workflows/manifest1.yml
-name: Manifest Workflow 1
+# central-workflows/.github/workflows/template.yml
+name: Template Workflow
 
 on: [push]
 
 jobs:
   build:
-    uses: owner/repo1/.github/workflows/template.yml@main
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Run tests
+        run: echo "Running tests NN"
