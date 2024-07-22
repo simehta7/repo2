@@ -196,7 +196,7 @@ jobs:
 
       - name: Fetch Central Template
         run: |
-          curl -O https://raw.githubusercontent.com/American-Institutes-for-Research/repo1/main/.github/workflows/template.yml
+          curl -O https://raw.githubusercontent.com/simehta7/repo1/main/.github/workflows/template.yml
 
       - name: Update Workflow Files
         run: |
