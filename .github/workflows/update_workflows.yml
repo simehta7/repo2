@@ -75,10 +75,8 @@ jobs:
       - name: Update Workflow Files
         run: |
           mkdir -p .github/workflows
-          cp 01-build-and-deploy.yml .github/workflows/
-          cp 02-manual-deploy.yml .github/workflows/
-          cp 03-monthly-patching.yml .github/workflows/
-          rm 01-build-and-deploy.yml 02-manual-deploy.yml 03-monthly-patching.yml
+          cp template.yml .github/workflows/
+          rm template.yml 
 
       - name: Commit and Push Changes
         env:
