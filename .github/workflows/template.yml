@@ -1,0 +1,137 @@
+name: 01 Build and Deploy the Application to INT
+
+on:
+  push:
+    branches:
+      - main
+      - "feature/*"
+  workflow_dispatch:
+
+env:
+  SITE: querybot-airprojects
+  FQDN: querybot.airprojects.org
+  RGPREPROD: hosting-preproduction-aks
+  RGPROD: hosting-prod-aks
+  CLUSTERPREPROD: preprod
+  CLUSTERPROD: production
+  BUILD_IMAGES: "app"
+  NAMESPACE: int
+
+jobs:
+  build_branch:
+    name: Build and Deploy the Application
+    runs-on: [ansible-runner]
+    timeout-minutes: 360
+
+    steps:
+      - uses: AutoModality/action-clean@v1
+      - name: Checkout the updated branch
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GIT_ACCESS_TOKEN }}
+          lfs: recursive
+          submodules: recursive
+
+      - name: Merge main/master -> docker-int
+        if: github.ref == 'refs/heads/main'
+        uses: devmasx/merge-branch@master
+        with:
+          type: now
+          from_branch: main
+          target_branch: docker-${{ env.NAMESPACE }}
+          github_token: ${{ secrets.GIT_ACCESS_TOKEN }}
+
+      - name: Checkout the updated branch
+        if: github.ref == 'refs/heads/main'
+        uses: actions/checkout@v3
+        with:
+          ref: docker-${{ env.NAMESPACE }}
+          token: ${{ secrets.GIT_ACCESS_TOKEN }}
+          lfs: recursive
+          submodules: recursive
+
+      - name: Login to the preproduction ACR
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ secrets.ACR_PREPROD }}
+          username: ${{ secrets.AZURE_CLIENT_ID }}
+          password: ${{ secrets.AZURE_CLIENT_SECRET }}
+
+      - name: Login to the DockerHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      - name: Set the image tag
+        run: |
+          IMAGE_TAG=$(date +'%y%m%d%H%M')-$(git rev-parse --short=7 HEAD)
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+          echo "IMAGE_TAG=$IMAGE_TAG" > image_tag_${{ env.SITE }}.txt
+        shell: bash
+
+      - name: Build the docker images
+        id: build-image
+        run: docker compose -f docker-compose.yml -f docker-compose-actions.yml build --build-arg  BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ') --pull --no-cache
+
+      - name: Run Snyk to check the Docker image for vulnerabilities
+        id: snyk-scan
+        continue-on-error: true
+        uses: snyk/actions/docker@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          image: app:${{ env.IMAGE_TAG }}
+          args: --severity-threshold=high
+
+      - name: Tag and push the clean image to the ACR
+        run: |
+          echo "Scan results met the minimum threshold::Pushing to the ACR"
+          for SERVICE in ${BUILD_IMAGES}; do 
+            docker tag ${SERVICE}:${{ env.IMAGE_TAG }} ${{ secrets.ACR_PREPROD }}/${{ env.SITE }}-${SERVICE}-${{ env.NAMESPACE }}:${{ env.IMAGE_TAG }}
+            docker tag ${SERVICE}:${{ env.IMAGE_TAG }} ${{ secrets.ACR_PREPROD }}/${{ env.SITE }}-${SERVICE}-${{ env.NAMESPACE }}:latest
+            docker push ${{ secrets.ACR_PREPROD }}/${{ env.SITE }}-${SERVICE}-${{ env.NAMESPACE }}:${{ env.IMAGE_TAG }} | grep -i -e 'The push refers to' -e Digest -e Status -e Error
+            docker push ${{ secrets.ACR_PREPROD }}/${{ env.SITE }}-${SERVICE}-${{ env.NAMESPACE }}:latest | grep -i -e 'The push refers to' -e Digest -e Status -e Error
+          done
+
+      - name: Login to Azure
+        uses: azure/login@v1
+        id: login-az
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Set the version of kubectl
+        uses: azure/setup-kubectl@v3
+        id: set-kubectl
+
+      - name: Set up kubelogin for non-interactive login
+        uses: azure/use-kubelogin@v1
+        with:
+          kubelogin-version: "v0.0.24"
+
+      - name: Get the preproduction AKS Credentials
+        uses: azure/aks-set-context@v3
+        id: get-context
+        with:
+          cluster-name: ${{ env.CLUSTERPREPROD }}
+          resource-group: ${{ env.RGPREPROD }}
+          use-kubelogin: "true"
+
+      - name: Set a custom tmp directory for the runner
+        run: |
+          mkdir mkdir -p ${{ github.workspace }}/custom_tmp
+          echo "TMPDIR=${{ github.workspace }}/custom_tmp" >> $GITHUB_ENV
+
+      - name: Deploy to the INT namespace in AKS
+        uses: Azure/k8s-deploy@v4
+        id: deploy-aks
+        with:
+          resource-group: ${{ env.RGPREPROD }}
+          namespace: ${{ env.NAMESPACE }}
+          images: |
+            ${{ secrets.ACR_PREPROD }}/${{ env.SITE }}-app-${{ env.NAMESPACE }}:${{ env.IMAGE_TAG }}
+          manifests: |
+            _docker/manifests/${{ env.SITE }}-${{ env.NAMESPACE }}-deploy.yml
+
+      - name: Clean up the repo folder on the runner
+        uses: AutoModality/action-clean@v1
