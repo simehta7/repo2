@@ -1,224 +1,3 @@
-# # # # # # qb2test/.github/workflows/update_workflows.yml
-# # # # # # name: Update Workflows
-
-# # # # # # on:
-# # # # # #   repository_dispatch:
-# # # # # #     types: [update_workflows]
-
-# # # # # # permissions:
-# # # # # #   contents: write
-# # # # # #   actions: write
-
-# # # # # # jobs:
-# # # # # #   update:
-# # # # # #     runs-on: ubuntu-latest
-
-# # # # # #     steps:
-# # # # # #       - name: Checkout code
-# # # # # #         uses: actions/checkout@v2
-
-# # # # # #       - name: Fetch Central Template
-# # # # # #         run: |
-# # # # # #           curl -O https://raw.githubusercontent.com/American-Institutes-for-Research/central-workflows/main/.github/workflows/template.yml
-
-# # # # # #       - name: Update Workflow Files
-# # # # # #         run: |
-# # # # # #           mkdir -p .github/workflows
-# # # # # #           cp template.yml .github/workflows/manifest1.yml
-# # # # # #           rm template.yml
-
-# # # # # #       - name: Configure Git
-# # # # # #         run: |
-# # # # # #           git config --global user.name "github-actions[bot]"
-# # # # # #           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-# # # # # #       - name: Pull Latest Changes
-# # # # # #         env:
-# # # # # #           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-# # # # # #         run: |
-# # # # # #           git pull https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/${{ github.repository }}.git main || true
-
-# # # # # #       - name: Commit and Push Changes
-# # # # # #         env:
-# # # # # #           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-# # # # # #         run: |
-# # # # # #           git add .github/workflows/manifest1.yml
-# # # # # #           git commit -m "Update workflow files from central template" || echo "No changes to commit"
-# # # # # #           git push https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main || echo "No changes to push"
-
-
-# # # # # name: Update Workflows
-
-# # # # # on:
-# # # # #   repository_dispatch:
-# # # # #     types: [update_workflows]
-
-# # # # # permissions:
-# # # # #   contents: write
-# # # # #   actions: write
-
-# # # # # jobs:
-# # # # #   update:
-# # # # #     runs-on: ubuntu-latest
-
-# # # # #     steps:
-# # # # #       - name: Checkout code
-# # # # #         uses: actions/checkout@v2
-
-# # # # #       - name: Fetch Central Template
-# # # # #         run: |
-# # # # #           curl -O https://raw.githubusercontent.com/American-Institutes-for-Research/central-workflows/main/.github/workflows/template.yml
-
-# # # # #       - name: Update Workflow Files
-# # # # #         run: |
-# # # # #           mkdir -p .github/workflows
-# # # # #           cp template.yml .github/workflows/manifest1.yml
-# # # # #           rm template.yml
-
-# # # # #       - name: Configure Git
-# # # # #         run: |
-# # # # #           git config --global user.name "github-actions[bot]"
-# # # # #           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-# # # # #       - name: Pull Latest Changes
-# # # # #         run: |
-# # # # #           git pull https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git main || true
-
-# # # # #       - name: Commit and Push Changes
-# # # # #         run: |
-# # # # #           git add .github/workflows/manifest1.yml
-# # # # #           git commit -m "Update workflow files from central template" || echo "No changes to commit"
-# # # # #           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main || echo "No changes to push"
-
-
-# # # # name: Update Workflows
-
-# # # # on:
-# # # #   repository_dispatch:
-# # # #     types: [update_workflows]
-
-# # # # permissions:
-# # # #   contents: write  # This allows the workflow to create, read, and write to the repository content
-# # # #   actions: write   # This allows the workflow to create and update GitHub Actions workflows
-
-# # # # jobs:
-# # # #   update:
-# # # #     runs-on: ubuntu-latest
-
-# # # #     steps:
-# # # #       - name: Checkout code
-# # # #         uses: actions/checkout@v2
-
-# # # #       - name: Fetch Central Template
-# # # #         run: |
-# # # #           curl -O https://raw.githubusercontent.com/American-Institutes-for-Research/central-workflows/main/.github/workflows/template.yml
-
-# # # #       - name: Update Workflow Files
-# # # #         run: |
-# # # #           mkdir -p .github/workflows
-# # # #           cp template.yml .github/workflows/manifest1.yml
-# # # #           rm template.yml
-
-# # # #       - name: Configure Git
-# # # #         run: |
-# # # #           git config --global user.name "github-actions[bot]"
-# # # #           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-# # # #       - name: Pull Latest Changes
-# # # #         run: |
-# # # #           git pull https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git main || true
-
-# # # #       - name: Commit and Push Changes
-# # # #         run: |
-# # # #           git add .github/workflows/manifest1.yml
-# # # #           git commit -m "Update workflow files from central template" || echo "No changes to commit"
-# # # #           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main || echo "No changes to push"
-
-
-# # # name: Update Workflows
-
-# # # on:
-# # #   repository_dispatch:
-# # #     types: [update_workflows]
-
-# # # permissions:
-# # #   contents: write  # This allows the workflow to create, read, and write to the repository content
-# # #   actions: write   # This allows the workflow to create and update GitHub Actions workflows
-
-# # # jobs:
-# # #   update:
-# # #     runs-on: ubuntu-latest
-
-# # #     steps:
-# # #       - name: Checkout code
-# # #         uses: actions/checkout@v2
-
-# # #       - name: Fetch Central Template
-# # #         run: |
-# # #           curl -O https://raw.githubusercontent.com/American-Institutes-for-Research/central-workflows/main/.github/workflows/template.yml
-
-# # #       - name: Update Workflow Files
-# # #         run: |
-# # #           mkdir -p .github/workflows
-# # #           cp template.yml .github/workflows/manifest1.yml
-# # #           rm template.yml
-
-# # #       - name: Configure Git
-# # #         run: |
-# # #           git config --global user.name "github-actions[bot]"
-# # #           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-# # #       - name: Commit and Push Changes
-# # #         env:
-# # #           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-# # #         run: |
-# # #           git add .github/workflows/manifest1.yml
-# # #           git commit -m "Update workflow files from central template" || echo "No changes to commit"
-# # #           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main || echo "No changes to push"
-
-# # name: Update Workflows
-
-# # on:
-# #   repository_dispatch:
-# #     types: [update_workflows]
-
-# # permissions:
-# #   contents: write  # Ensure the workflow has write access to the repository contents
-# #   actions: write   # Ensure the workflow has write access to GitHub Actions workflows
-
-# # jobs:
-# #   update:
-# #     runs-on: ubuntu-latest
-
-# #     steps:
-# #       - name: Checkout code
-# #         uses: actions/checkout@v2
-
-# #       - name: Fetch Central Template
-# #         run: |
-# #           curl -O https://raw.githubusercontent.com/simehta7/repo1/main/.github/workflows/template.yml
-
-# #       - name: Update Workflow Files
-# #         run: |
-# #           mkdir -p .github/workflows
-# #           cp template.yml .github/workflows/manifest1.yml
-# #           rm template.yml
-
-# #       - name: Configure Git
-# #         run: |
-# #           git config --global user.name "github-actions[bot]"
-# #           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-# #       - name: Commit and Push Changes
-# #         env:
-# #           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-# #         run: |
-# #           git add .github/workflows/manifest1.yml
-# #           git commit -m "Update workflow files from central template" || echo "No changes to commit"
-# #           git push https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main || echo "No changes to push"
-
-
-
 # name: Update Workflows
 
 # on:
@@ -236,6 +15,9 @@
 #     steps:
 #       - name: Checkout code
 #         uses: actions/checkout@v2
+#         with:
+#           persist-credentials: false  # Disable persist-credentials to use PAT
+#           fetch-depth: 0
 
 #       - name: Fetch Central Template
 #         run: |
@@ -247,19 +29,18 @@
 #           cp template.yml .github/workflows/manifest1.yml
 #           rm template.yml
 
-#       - name: Configure Git
+#       - name: Commit changes
 #         run: |
-#           git config --global user.name "github-actions[bot]"
-#           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-#       - name: Commit and Push Changes
-#         env:
-#           PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-#         run: |
+#           git config --local user.email "github-actions[bot]@users.noreply.github.com"
+#           git config --local user.name "github-actions[bot]"
 #           git add .github/workflows/manifest1.yml
 #           git commit -m "Update workflow files from central template" || echo "No changes to commit"
-#           git push https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main || echo "No changes to push"
 
+#       - name: Push changes
+#         uses: ad-m/github-push-action@v0.6.0
+#         with:
+#           github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+#           branch: main
 
 
 name: Update Workflows
@@ -271,7 +52,6 @@ on:
 permissions:
   contents: write
   actions: write
-
 jobs:
   update:
     runs-on: ubuntu-latest
@@ -283,25 +63,29 @@ jobs:
           persist-credentials: false  # Disable persist-credentials to use PAT
           fetch-depth: 0
 
-      - name: Fetch Central Template
+      - name: Fetch Workflow Files from Central Repository
         run: |
           curl -O https://raw.githubusercontent.com/simehta7/repo1/main/.github/workflows/template.yml
+      - name: Replace Placeholders
+        run: |
+          # sed -i 's/querybot-airprojects/actual_value_1/g' 01-build-and-deploy.yml
+          # sed -i 's/querybot.airprojects.org/actual_value_2/g' 01-build-and-deploy.yml
+          # # Add more sed commands for other placeholders and other files if needed
 
       - name: Update Workflow Files
         run: |
           mkdir -p .github/workflows
-          cp template.yml .github/workflows/manifest1.yml
-          rm template.yml
+          cp 01-build-and-deploy.yml .github/workflows/
+          cp 02-manual-deploy.yml .github/workflows/
+          cp 03-monthly-patching.yml .github/workflows/
+          rm 01-build-and-deploy.yml 02-manual-deploy.yml 03-monthly-patching.yml
 
-      - name: Commit changes
+      - name: Commit and Push Changes
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git add .github/workflows/manifest1.yml
-          git commit -m "Update workflow files from central template" || echo "No changes to commit"
-
-      - name: Push changes
-        uses: ad-m/github-push-action@v0.6.0
-        with:
-          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          branch: main
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add .github/workflows/01-build-and-deploy.yml .github/workflows/02-manual-deploy.yml .github/workflows/03-monthly-patching.yml
+          git commit -m "Update workflow files from central repository" || echo "No changes to commit"
+          git push https://x-access-token:${{ secrets.PERSONAL_AACCESS_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main || echo "No changes to push"
